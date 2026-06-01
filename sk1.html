@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SehatKita - Sehat Hari Ini, Bahagia Selamanya</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:#00B4A0;--teal-dark:#009688;--teal-light:#E0F7F5;--teal-mid:#B2EBE8;
+    --navy:#1A3C5E;--text:#2D3748;--text-light:#718096;--bg:#F7FAFA;
+    --white:#FFFFFF;--border:#E2E8F0;
+    --shadow:0 2px 16px rgba(0,180,160,.10);
+    --shadow-lg:0 8px 32px rgba(0,0,0,.10);
+    --radius:12px;--radius-sm:8px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);}
+
+  nav{background:var(--white);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;box-shadow:0 1px 4px rgba(0,0,0,.07);position:sticky;top:0;z-index:100;}
+
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .nav-logo img{height:36px;width:auto;object-fit:contain;display:block;}
+  .nav-logo-fallback{display:flex;align-items:center;gap:8px;}
+  .nav-logo-icon{width:36px;height:36px;flex-shrink:0;}
+  .nav-logo-text{font-weight:800;font-size:1.2rem;color:var(--teal);letter-spacing:-.3px;}
+
+  .nav-links{display:flex;gap:28px;list-style:none;}
+  .nav-links a{text-decoration:none;color:var(--text-light);font-size:.9rem;font-weight:500;transition:color .2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--teal);}
+  .nav-right{display:flex;align-items:center;gap:12px;}
+  .btn{padding:8px 20px;border-radius:8px;font-size:.875rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+  .btn-outline{border:1.5px solid var(--teal);color:var(--teal);background:transparent;}
+  .btn-outline:hover{background:var(--teal-light);}
+  .btn-primary{background:var(--teal);color:#fff;}
+  .btn-primary:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,180,160,.3);}
+  .search-box{display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;gap:8px;}
+  .search-box input{border:none;background:transparent;outline:none;font-size:.875rem;width:180px;}
+
+  .sidebar{position:fixed;left:0;top:64px;bottom:0;width:220px;background:var(--white);border-right:1px solid var(--border);padding:20px 0;overflow-y:auto;z-index:50;}
+  .sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 20px;cursor:pointer;color:var(--text-light);font-size:.875rem;font-weight:500;transition:all .2s;}
+  .sidebar-item:hover{background:var(--teal-light);color:var(--teal);}
+  .sidebar-item.active{background:var(--teal-light);color:var(--teal);font-weight:700;border-right:3px solid var(--teal);}
+  .sidebar-item svg{width:18px;height:18px;flex-shrink:0;}
+  .main-content{margin-left:220px;}
+  .page{display:none;}.page.active{display:block;}
+
+  .hero{background:linear-gradient(135deg,#E0F7F5 0%,#B2EBE8 40%,#fff 100%);padding:48px 40px;display:flex;align-items:center;gap:40px;}
+  .hero-text{flex:1;}
+  .hero-text h1{font-size:2.4rem;font-weight:800;line-height:1.2;color:var(--navy);margin-bottom:12px;}
+  .hero-text h1 span{color:var(--teal);}
+  .hero-text p{color:var(--text-light);margin-bottom:24px;max-width:420px;line-height:1.6;}
+  .hero-btns{display:flex;gap:12px;}
+  .hero-img-wrap{flex:1;display:flex;justify-content:center;position:relative;}
+  .hero-img-wrap img{width:320px;height:260px;object-fit:cover;border-radius:20px;box-shadow:var(--shadow-lg);}
+  .badge-float{position:absolute;background:var(--white);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;}
+  .badge-float.top-left{top:20px;left:0;}
+  .badge-float.bottom-right{bottom:20px;right:0;}
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot-green{background:#4CAF50;}.dot-teal{background:var(--teal);}
+
+  .section{padding:40px;}
+  .section-title{font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .section-sub{color:var(--text-light);font-size:.85rem;margin-bottom:20px;}
+
+  .service-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;}
+  .service-card{background:var(--white);border-radius:var(--radius);padding:18px 12px;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;border:1.5px solid transparent;}
+  .service-card:hover{border-color:var(--teal);transform:translateY(-3px);}
+  .service-icon{width:52px;height:52px;border-radius:14px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
+  .service-icon svg{width:28px;height:28px;}
+  .service-card p{font-size:.78rem;font-weight:600;color:var(--text);line-height:1.3;}
+
+  .promo-banner{background:linear-gradient(90deg,var(--teal) 0%,#00897B 100%);border-radius:var(--radius);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 40px 32px;color:#fff;}
+  .promo-banner h3{font-size:1.1rem;font-weight:700;}
+  .promo-banner p{font-size:.82rem;opacity:.9;}
+  .promo-badge{background:#fff;color:var(--teal);font-weight:800;font-size:1.5rem;padding:8px 16px;border-radius:8px;}
+
+  .article-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .article-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;}
+  .article-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+  .article-card img{width:100%;height:140px;object-fit:cover;display:block;}
+  .article-body{padding:14px;}
+  .article-tag{background:var(--teal-light);color:var(--teal);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:6px;}
+  .article-body h4{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.4;margin-bottom:6px;}
+  .article-body p{font-size:.78rem;color:var(--text-light);line-height:1.5;}
+
+  .doctor-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+  .doctor-card{background:var(--white);border-radius:var(--radius);padding:16px 12px;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;}
+  .doctor-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+  .doctor-card img{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;object-fit:cover;border:3px solid var(--teal-mid);display:block;}
+  .doctor-card h4{font-size:.8rem;font-weight:700;color:var(--navy);margin-bottom:2px;}
+  .doctor-card p{font-size:.72rem;color:var(--text-light);margin-bottom:8px;}
+  .doctor-card .rating{font-size:.75rem;color:#F59E0B;font-weight:600;}
+
+  .stats-section{background:var(--white);padding:32px 40px;}
+  .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);}
+  .stat-item{text-align:center;padding:16px;border-right:1px solid var(--border);}
+  .stat-item:last-child{border-right:none;}
+  .stat-num{font-size:1.8rem;font-weight:800;color:var(--teal);}
+  .stat-label{font-size:.78rem;color:var(--text-light);margin-top:2px;}
+
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-label{font-size:.8rem;font-weight:600;color:var(--text);}
+  .form-input,.form-select{padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.875rem;outline:none;transition:border .2s;font-family:inherit;}
+  .form-input:focus,.form-select:focus{border-color:var(--teal);}
+
+  .time-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .time-slot{padding:8px;border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;}
+  .time-slot:hover{border-color:var(--teal);color:var(--teal);}
+  .time-slot.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .time-slot.unavail{background:#F5F5F5;color:#bbb;cursor:not-allowed;}
+
+  .history-tabs{display:flex;margin-bottom:20px;border-bottom:2px solid var(--border);}
+  .history-tab{padding:10px 20px;font-size:.88rem;font-weight:600;cursor:pointer;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
+  .history-tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+  .history-card{background:var(--white);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);margin-bottom:12px;transition:all .2s;}
+  .history-card:hover{box-shadow:var(--shadow-lg);}
+  .history-card img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--teal-mid);}
+  .history-info{flex:1;}
+  .history-info h4{font-size:.9rem;font-weight:700;color:var(--navy);}
+  .history-info p{font-size:.78rem;color:var(--text-light);}
+  .history-info .date{font-size:.75rem;color:var(--text-light);margin-top:2px;}
+  .status-badge{padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;flex-shrink:0;}
+  .status-selesai{background:#E8F5E9;color:#388E3C;}
+  .status-mendatang{background:#FFF8E1;color:#F59E0B;}
+  .status-batal{background:#FFEBEE;color:#E53935;}
+  .btn-lihat{padding:6px 16px;border-radius:8px;font-size:.75rem;font-weight:600;cursor:pointer;border:1.5px solid var(--teal);color:var(--teal);background:transparent;transition:all .2s;flex-shrink:0;}
+  .btn-lihat:hover{background:var(--teal);color:#fff;}
+
+  .appt-section{background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin:24px 40px;}
+  .appt-layout{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  .appt-left,.appt-right{display:flex;flex-direction:column;gap:16px;}
+
+  .step-indicator{display:flex;align-items:center;margin-bottom:24px;}
+  .step{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;}
+  .step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;}
+  .step.done .step-num{background:var(--teal);color:#fff;}
+  .step.active .step-num{background:var(--navy);color:#fff;}
+  .step.pending .step-num{background:var(--border);color:var(--text-light);}
+  .step.done .step-label{color:var(--teal);}
+  .step.active .step-label{color:var(--navy);font-weight:700;}
+  .step.pending .step-label{color:var(--text-light);}
+  .step-line{flex:1;height:2px;background:var(--border);margin:0 8px;}
+  .step-line.done{background:var(--teal);}
+
+  .layanan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .layanan-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;text-align:center;border:1.5px solid transparent;}
+  .layanan-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--teal);}
+
+  .popular-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;margin-bottom:12px;}
+  .popular-card img{width:160px;height:130px;object-fit:cover;flex-shrink:0;}
+  .popular-content{padding:16px;flex:1;}
+  .popular-content h4{font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:6px;}
+  .popular-content ul{list-style:none;display:flex;flex-direction:column;gap:4px;}
+  .popular-content ul li{font-size:.75rem;color:var(--text-light);display:flex;align-items:center;gap:6px;}
+  .popular-content ul li::before{content:'✓';color:var(--teal);font-weight:700;}
+
+  .ulasan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .ulasan-card{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow);}
+  .ulasan-card img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--teal-mid);}
+  .ulasan-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .confirm-modal{background:#fff;border-radius:20px;width:540px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,.2);overflow:hidden;animation:modalIn .3s ease;}
+  @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.97);}to{opacity:1;transform:none;}}
+  .confirm-header{background:linear-gradient(135deg,var(--teal),#00897B);padding:24px 28px;color:#fff;display:flex;align-items:center;gap:14px;}
+  .confirm-header-icon{width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .confirm-header h2{font-size:1.15rem;font-weight:800;}
+  .confirm-header p{font-size:.82rem;opacity:.9;margin-top:2px;}
+  .confirm-body{padding:24px 28px;}
+  .confirm-doc-row{display:flex;align-items:center;gap:14px;background:var(--teal-light);border-radius:12px;padding:14px 16px;margin-bottom:20px;}
+  .confirm-doc-row img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid var(--teal);flex-shrink:0;}
+  .confirm-doc-info h4{font-size:.92rem;font-weight:700;color:var(--navy);}
+  .confirm-doc-info p{font-size:.78rem;color:var(--text-light);}
+  .confirm-doc-info span{font-size:.72rem;background:var(--teal);color:#fff;padding:2px 8px;border-radius:20px;font-weight:600;}
+  .confirm-details{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+  .confirm-detail-item{background:var(--bg);border-radius:10px;padding:12px 14px;}
+  .detail-label{font-size:.72rem;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+  .detail-value{font-size:.9rem;font-weight:700;color:var(--navy);}
+  .confirm-note{background:#FFF8E1;border-radius:10px;padding:12px 14px;margin-bottom:20px;border-left:4px solid #F59E0B;}
+  .confirm-note .note-label{font-size:.72rem;color:#F59E0B;font-weight:700;text-transform:uppercase;margin-bottom:4px;}
+  .confirm-note .note-text{font-size:.85rem;color:var(--text);}
+  .confirm-price{background:var(--teal-light);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border:1.5px solid var(--teal-mid);}
+  .confirm-price .price-label{font-size:.85rem;color:var(--text-light);}
+  .confirm-price .price-sub{font-size:.72rem;color:var(--teal);}
+  .confirm-price .price-value{font-size:1.25rem;font-weight:800;color:var(--teal);}
+  .confirm-terms{font-size:.75rem;color:var(--text-light);line-height:1.6;margin-bottom:20px;background:var(--bg);border-radius:8px;padding:10px 14px;}
+  .confirm-terms a{color:var(--teal);text-decoration:none;font-weight:600;}
+  .confirm-footer{padding:0 28px 24px;display:flex;gap:12px;}
+  .confirm-footer .btn{flex:1;padding:13px;font-size:.95rem;}
+  .success-modal{background:#fff;border-radius:20px;width:440px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,.2);padding:40px 32px;text-align:center;animation:modalIn .3s ease;}
+  .success-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--teal),#00897B);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;}
+  .success-icon svg{width:40px;height:40px;color:#fff;}
+  .success-modal h2{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:8px;}
+  .success-modal > p{font-size:.875rem;color:var(--text-light);line-height:1.6;margin-bottom:24px;}
+  .success-booking-id{background:var(--teal-light);border-radius:10px;padding:12px 20px;font-size:.85rem;color:var(--teal);font-weight:700;margin-bottom:20px;letter-spacing:1px;}
+  .success-detail{background:var(--bg);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left;}
+  .success-detail-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;}
+  .success-actions{display:flex;flex-direction:column;gap:10px;}
+
+  footer{background:var(--navy);color:#fff;padding:48px 40px 24px;}
+  .footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1.2fr;gap:40px;margin-bottom:40px;}
+
+  .footer-logo-wrap{display:flex;align-items:center;margin-bottom:16px;}
+  .footer-logo-wrap img{height:52px;width:auto;object-fit:contain;}
+  .footer-logo-fallback{display:flex;align-items:center;gap:10px;}
+  .footer-logo-fallback .f-icon{width:48px;height:48px;flex-shrink:0;}
+  .footer-logo-fallback .f-name{font-size:1.5rem;font-weight:800;color:var(--teal);letter-spacing:-.5px;}
+
+  .footer-brand p{font-size:.82rem;opacity:.75;line-height:1.7;margin-bottom:20px;max-width:280px;}
+
+  .footer-social{display:flex;gap:10px;}
+  .social-btn{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff;transition:all .2s;overflow:hidden;cursor:pointer;flex-shrink:0;}
+  .social-btn:hover{background:var(--teal);border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,180,160,.4);}
+
+  .social-btn img{width:20px;height:20px;object-fit:contain;filter:brightness(0) invert(1);}
+  .social-btn svg{width:18px;height:18px;}
+
+  .footer-col h4{font-size:.9rem;font-weight:700;margin-bottom:16px;color:#fff;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .footer-col ul li a{font-size:.82rem;opacity:.7;text-decoration:none;color:#fff;transition:all .2s;display:flex;align-items:center;gap:6px;}
+  .footer-col ul li a:hover{opacity:1;color:var(--teal);padding-left:4px;}
+  .store-btn-wrap{display:flex;flex-direction:column;gap:10px;}
+  .store-btn{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 16px;cursor:pointer;transition:all .2s;text-decoration:none;color:#fff;}
+  .store-btn:hover{background:var(--teal);border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,180,160,.35);}
+  .store-btn img{width:24px;height:24px;object-fit:contain;}
+  .store-btn svg{flex-shrink:0;}
+  .store-btn-text .line1{font-size:.62rem;opacity:.8;line-height:1;display:block;}
+  .store-btn-text .line2{font-size:.95rem;font-weight:700;line-height:1.3;display:block;}
+
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:.78rem;opacity:.6;}
+  .footer-bottom span{opacity:1;}
+
+  /* =============================================
+     HAMBURGER MENU BUTTON (mobile only)
+  ============================================= */
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:none;background:transparent;z-index:200;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--navy);border-radius:2px;transition:all .3s;}
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+  /* Sidebar overlay for mobile */
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:49;}
+  .sidebar-overlay.open{display:block;}
+
+  /* =============================================
+     TABLET / SMALL LAPTOP  (≤ 1024px)
+  ============================================= */
+  @media(max-width:1024px){
+    .service-grid{grid-template-columns:repeat(3,1fr);}
+    .article-grid{grid-template-columns:repeat(2,1fr);}
+    .doctor-grid{grid-template-columns:repeat(3,1fr);}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:28px;}
+    .layanan-grid{grid-template-columns:repeat(2,1fr);}
+    .ulasan-grid{grid-template-columns:repeat(2,1fr);}
+    .stats-grid{grid-template-columns:repeat(3,1fr);}
+    .stat-item:nth-child(3){border-right:none;}
+  }
+
+  /* =============================================
+     MOBILE  (≤ 768px) — Android & iPhone
+  ============================================= */
+  @media(max-width:768px){
+    /* --- NAV --- */
+    nav{padding:0 16px;height:56px;position:sticky;top:0;z-index:100;}
+    .nav-links{display:none;}
+    .search-box{display:none;}
+    .hamburger{display:flex;}
+    .nav-right .btn-outline,.nav-right .btn-primary{display:none;}
+
+    /* --- SIDEBAR (drawer) --- */
+    .sidebar{
+      transform:translateX(-100%);
+      transition:transform .3s ease;
+      top:56px;
+      width:260px;
+      z-index:50;
+      box-shadow:4px 0 20px rgba(0,0,0,.15);
+    }
+    .sidebar.open{transform:translateX(0);}
+
+    /* --- MAIN CONTENT --- */
+    .main-content{margin-left:0;}
+
+    /* --- HERO --- */
+    .hero{flex-direction:column;padding:24px 16px;gap:24px;text-align:center;}
+    .hero-text h1{font-size:1.7rem;}
+    .hero-text p{max-width:100%;}
+    .hero-btns{justify-content:center;flex-wrap:wrap;}
+    .hero-img-wrap img{width:100%;max-width:280px;height:200px;}
+    .badge-float.top-left{left:0;top:10px;}
+    .badge-float.bottom-right{right:0;bottom:10px;}
+
+    /* --- STATS --- */
+    .stats-section{padding:20px 16px;}
+    .stats-grid{grid-template-columns:repeat(2,1fr);}
+    .stat-item{border-right:none;border-bottom:1px solid var(--border);padding:12px 8px;}
+    .stat-item:last-child{border-bottom:none;grid-column:1/-1;}
+
+    /* --- SECTIONS --- */
+    .section{padding:20px 16px;}
+    .section-title{font-size:1rem;}
+
+    /* --- SERVICE GRID --- */
+    .service-grid{grid-template-columns:repeat(3,1fr);gap:10px;}
+    .service-icon{width:42px;height:42px;}
+    .service-card{padding:12px 8px;}
+    .service-card p{font-size:.72rem;}
+
+    /* --- PROMO BANNER --- */
+    .promo-banner{margin:0 16px 24px;flex-direction:column;padding:16px;gap:12px;text-align:center;}
+    .promo-banner h3{font-size:.95rem;}
+
+    /* --- ARTICLE GRID --- */
+    .article-grid{grid-template-columns:1fr;gap:14px;}
+
+    /* --- DOCTOR GRID --- */
+    .doctor-grid{grid-template-columns:repeat(2,1fr);}
+    .doctor-card{padding:12px 8px;}
+    div[style*="background:var(--white);padding:32px 40px"]{padding:20px 16px !important;}
+
+    /* --- ULASAN GRID --- */
+    .ulasan-grid{grid-template-columns:1fr;}
+
+    /* --- APPOINTMENT --- */
+    .appt-section{margin:16px;padding:20px 16px;}
+    .appt-layout{grid-template-columns:1fr;}
+    .time-slots{grid-template-columns:repeat(3,1fr);}
+
+    /* --- LAYANAN GRID --- */
+    .layanan-grid{grid-template-columns:repeat(2,1fr);}
+
+    /* --- POPULAR CARD --- */
+    .popular-card{flex-direction:column;}
+    .popular-card img{width:100%;height:160px;}
+
+    /* --- HISTORY CARD --- */
+    .history-card{flex-wrap:wrap;gap:10px;padding:12px;}
+    .history-info{min-width:0;}
+
+    /* --- PROFILE PAGE --- */
+    .profile-grid{grid-template-columns:1fr !important;}
+
+    /* --- FOOTER --- */
+    footer{padding:32px 16px 16px;}
+    .footer-grid{grid-template-columns:1fr;gap:20px;}
+    .footer-bottom{flex-direction:column;gap:8px;text-align:center;}
+
+    /* --- MODALS --- */
+    .confirm-modal{width:95vw;border-radius:16px;}
+    .confirm-body{padding:16px;}
+    .confirm-footer{padding:0 16px 16px;flex-direction:column;}
+    .confirm-details{grid-template-columns:1fr;}
+    .success-modal{width:95vw;padding:28px 20px;}
+  }
+
+  /* =============================================
+     SMALL PHONES (≤ 390px) — iPhone SE / mini
+  ============================================= */
+  @media(max-width:390px){
+    .hero-text h1{font-size:1.45rem;}
+    .service-grid{grid-template-columns:repeat(2,1fr);}
+    .doctor-grid{grid-template-columns:1fr 1fr;}
+    .time-slots{grid-template-columns:repeat(2,1fr);}
+    .stats-grid{grid-template-columns:1fr 1fr;}
+    .step-label{font-size:.7rem;}
+  }
+
+  /* =============================================
+     SAFE AREA — iPhone notch / Dynamic Island
+  ============================================= */
+  @supports(padding:max(0px)){
+    nav{
+      padding-left:max(16px,env(safe-area-inset-left));
+      padding-right:max(16px,env(safe-area-inset-right));
+    }
+    footer{
+      padding-bottom:max(24px,env(safe-area-inset-bottom));
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<nav>
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="nav-logo" href="#" onclick="showPage('beranda',null);return false">
+    <img src="https://i.ibb.co/PsW2pCZ5/logo-sknew-removebg-preview.png" alt="SehatKita" style="height:36px;width:auto;object-fit:contain;display:block;">
+    <span class="nav-logo-text">SehatKita</span>
+  </a>
+
+  <div class="nav-right">
+    <div class="search-box">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Cari dokter, layanan...">
+    </div>
+  </div>
+</nav>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item active" onclick="showPage('beranda',this);closeSidebar()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Beranda
+  </div>
+  <div class="sidebar-item" onclick="showPage('janji',this);closeSidebar()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Buat Janji Temu
+  </div>
+  <div class="sidebar-item" onclick="showPage('riwayat',this);closeSidebar()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>Riwayat Konsultasi
+  </div>
+  <div class="sidebar-item" onclick="showPage('layanan',this);closeSidebar()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Layanan Kesehatan
+  </div>
+  <div class="sidebar-item" onclick="showPage('program',this);closeSidebar()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Program Kesehatan
+  </div>
+  <div class="sidebar-item" onclick="showPage('profil',this);closeSidebar()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil Saya
+  </div>
+</div>
+
+<div class="main-content">
+
+<div id="page-beranda" class="page active">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Sehat Hari Ini,<br><span>Bahagia Selamanya</span></h1>
+      <p>Konsultasikan kesehatan Anda dengan dokter spesialis terpercaya kapan saja dan di mana saja.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="showPage('janji',null)">Buat Janji Temu</button>
+        <button class="btn btn-outline">Lihat Layanan</button>
+      </div>
+    </div>
+    <div class="hero-img-wrap">
+      <div class="badge-float top-left"><span class="dot dot-green"></span><span>1.200+ Dokter Online</span></div>
+      <img src="https://i.ibb.co/hJ2MD4wq/dr-home.png" alt="Dokter SehatKita">
+      <div class="badge-float bottom-right"><span class="dot dot-teal"></span><span>4.9 ⭐ Rating</span></div>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-item"><div class="stat-num">72<span style="font-size:1rem">rb+</span></div><div class="stat-label">Total Pasien</div></div>
+      <div class="stat-item"><div class="stat-num">68<span style="font-size:1rem">rb+</span></div><div class="stat-label">Konsultasi Selesai</div></div>
+      <div class="stat-item"><div class="stat-num">7.5<span style="font-size:1rem">rb+</span></div><div class="stat-label">Dokter Terverifikasi</div></div>
+      <div class="stat-item"><div class="stat-num">120<span style="font-size:1rem">/80</span></div><div class="stat-label">Avg. Tekanan Darah</div></div>
+      <div class="stat-item"><div class="stat-num">90<span style="font-size:1rem">%+</span></div><div class="stat-label">Kepuasan Pengguna</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Layanan Cepat</div>
+    <div class="section-sub">Akses layanan kesehatan dengan mudah dan cepat</div>
+    <div class="service-grid">
+      <div class="service-card" onclick="showPage('janji',null)"><div class="service-icon" style="background:#E0F7F5"><svg fill="none" viewBox="0 0 24 24" stroke="#00B4A0"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><p>Konsultasi Online</p></div>
+      <div class="service-card" onclick="showPage('janji',null)"><div class="service-icon" style="background:#FFF8E1"><svg fill="none" viewBox="0 0 24 24" stroke="#F59E0B"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><p>Janji Temu</p></div>
+      <div class="service-card"><div class="service-icon" style="background:#FFEBEE"><svg fill="none" viewBox="0 0 24 24" stroke="#E53935"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><p>Pemeriksaan Jantung</p></div>
+      <div class="service-card"><div class="service-icon" style="background:#F3E5F5"><svg fill="none" viewBox="0 0 24 24" stroke="#9C27B0"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div><p>Rawat Inap</p></div>
+      <div class="service-card"><div class="service-icon" style="background:#E8F5E9"><svg fill="none" viewBox="0 0 24 24" stroke="#4CAF50"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><p>Vaksinasi</p></div>
+      <div class="service-card"><div class="service-icon" style="background:#E3F2FD"><svg fill="none" viewBox="0 0 24 24" stroke="#2196F3"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><p>Cek Lab</p></div>
+    </div>
+  </div>
+
+  <div class="promo-banner">
+    <div><h3>Konsultasi dengan Dokter Spesialis</h3><p>Dapatkan layanan konsultasi terbaik dari dokter spesialis berpengalaman</p></div>
+    <div class="promo-badge">DISKON 20%</div>
+    <button class="btn" style="background:#fff;color:var(--teal)" onclick="showPage('janji',null)">Buat Janji Temu</button>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Artikel Kesehatan</div>
+    <div class="section-sub">Informasi kesehatan terpercaya untuk Anda</div>
+    <div class="article-grid">
+      <div class="article-card"><img src="https://i.ibb.co/qLwcWrFz/makanan.jpg" alt="Nutrisi"><div class="article-body"><span class="article-tag">Nutrisi</span><h4>Pola Makan Sehat untuk Jantung yang Kuat</h4><p>Temukan makanan terbaik yang mendukung kesehatan jantung Anda setiap hari.</p></div></div>
+      <div class="article-card"><img src="https://i.ibb.co/0p96cqmq/olahraga.jpg" alt="Olahraga"><div class="article-body"><span class="article-tag">Olahraga</span><h4>5 Olahraga Ringan yang Bisa Dilakukan di Rumah</h4><p>Tetap aktif dan sehat dengan rutinitas olahraga mudah tanpa peralatan khusus.</p></div></div>
+      <div class="article-card"><img src="https://i.ibb.co/35N8dt9x/menghilangkan-stres.webp" alt="Stress"><div class="article-body"><span class="article-tag">Mental Health</span><h4>Cara Mengelola Stres di Tengah Kesibukan</h4><p>Pelajari teknik manajemen stres yang efektif untuk kesehatan mental yang optimal.</p></div></div>
+      <div class="article-card"><img src="https://i.ibb.co/N6xjZPFC/anak-kecil.webp" alt="Anak"><div class="article-body"><span class="article-tag">Anak & Keluarga</span><h4>Panduan Vaksinasi Lengkap untuk Anak</h4><p>Jadwal vaksinasi yang tepat untuk melindungi si kecil dari berbagai penyakit.</p></div></div>
+    </div>
+  </div>
+
+  <div style="background:var(--white);padding:32px 40px;">
+    <div class="section-title">Dokter Spesialis Terbaik</div>
+    <div class="section-sub">Tim dokter berpengalaman dan terverifikasi untuk Anda</div>
+    <div class="doctor-grid">
+      <div class="doctor-card"><img src="https://i.ibb.co/Z4zV3N2/dr-rina.jpg" alt="dr. Rina Marlina"><h4>dr. Rina Marlina, Sp.PD</h4><p>Spesialis Penyakit Dalam</p><div class="rating">⭐ 4.9 · 120 Ulasan</div><button class="btn btn-primary" style="margin-top:10px;font-size:.75rem;padding:6px 14px" onclick="showPage('janji',null)">Buat Janji</button></div>
+      <div class="doctor-card"><img src="https://i.ibb.co/ym6cBMBQ/dr-andi.jpg" alt="dr. Andi Wijaya"><h4>dr. Andi Wijaya, Sp.OG</h4><p>Spesialis Kandungan</p><div class="rating">⭐ 4.8 · 98 Ulasan</div><button class="btn btn-primary" style="margin-top:10px;font-size:.75rem;padding:6px 14px" onclick="showPage('janji',null)">Buat Janji</button></div>
+      <div class="doctor-card"><img src="https://i.ibb.co/KcDt7zHM/dr-budi.jpg" alt="dr. Budi Santoso"><h4>dr. Budi Santoso, Sp.A</h4><p>Spesialis Anak</p><div class="rating">⭐ 4.9 · 145 Ulasan</div><button class="btn btn-primary" style="margin-top:10px;font-size:.75rem;padding:6px 14px" onclick="showPage('janji',null)">Buat Janji</button></div>
+      <div class="doctor-card"><img src="https://i.ibb.co/SwkJ86qQ/dr-lisa.webp" alt="dr. Lisa Amelia"><h4>dr. Lisa Amelia, Sp.GK</h4><p>Spesialis Gizi Klinik</p><div class="rating">⭐ 4.7 · 87 Ulasan</div><button class="btn btn-primary" style="margin-top:10px;font-size:.75rem;padding:6px 14px" onclick="showPage('janji',null)">Buat Janji</button></div>
+      <div class="doctor-card"><img src="https://i.ibb.co/gZbZB8Tr/dr-rahmat.webp" alt="dr. Rahmat"><h4>dr. Rahmat Hidayat, Sp.N</h4><p>Spesialis Saraf</p><div class="rating">⭐ 4.8 · 103 Ulasan</div><button class="btn btn-primary" style="margin-top:10px;font-size:.75rem;padding:6px 14px" onclick="showPage('janji',null)">Buat Janji</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Apa Kata Pasien</div>
+    <div class="section-sub">Ulasan nyata dari pengguna SehatKita</div>
+    <div class="ulasan-grid">
+      <div class="ulasan-card"><div class="ulasan-top"><img src="https://i.ibb.co/bRKCYgYD/profil-removebg-preview.png" alt="Siti"><div><strong style="font-size:.85rem">Siti Aisyah</strong><br><span style="font-size:.72rem;color:var(--text-light)">25 April 2026</span></div><div style="margin-left:auto;color:#F59E0B;font-size:.85rem">⭐⭐⭐⭐⭐</div></div><p style="font-size:.8rem;color:var(--text-light);line-height:1.6">"Layanan sangat memuaskan! Dokternya ramah dan penjelasannya mudah dipahami."</p><div style="font-size:1.4rem;font-weight:800;color:var(--teal);margin-top:8px">4.9</div></div>
+      <div class="ulasan-card"><div class="ulasan-top"><img src="https://i.ibb.co/bRKCYgYD/profil-removebg-preview.png" alt="Budi"><div><strong style="font-size:.85rem">Budi Setiawan</strong><br><span style="font-size:.72rem;color:var(--text-light)">18 April 2026</span></div><div style="margin-left:auto;color:#F59E0B;font-size:.85rem">⭐⭐⭐⭐⭐</div></div><p style="font-size:.8rem;color:var(--text-light);line-height:1.6">"Proses booking mudah dan cepat. Dokter sangat profesional!"</p><div style="font-size:1.4rem;font-weight:800;color:var(--teal);margin-top:8px">4.8</div></div>
+      <div class="ulasan-card"><div class="ulasan-top"><img src="https://i.ibb.co/bRKCYgYD/profil-removebg-preview.png" alt="Dewi"><div><strong style="font-size:.85rem">Dewi Sartika</strong><br><span style="font-size:.72rem;color:var(--text-light)">12 April 2026</span></div><div style="margin-left:auto;color:#F59E0B;font-size:.85rem">⭐⭐⭐⭐⭐</div></div><p style="font-size:.8rem;color:var(--text-light);line-height:1.6">"Sangat terbantu dengan layanan telemedicine. Konsultasi dari rumah lebih praktis!"</p><div style="font-size:1.4rem;font-weight:800;color:var(--teal);margin-top:8px">4.9</div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+
+      <div class="footer-brand">
+
+        <div class="footer-logo-wrap" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <img src="https://i.ibb.co/PsW2pCZ5/logo-sknew-removebg-preview.png" alt="SehatKita Logo" style="height:48px;width:auto;object-fit:contain;">
+          <span style="font-size:1.4rem;font-weight:800;color:#00B4A0;letter-spacing:-.5px;">SehatKita</span>
+        </div>
+
+        <p>Platform layanan kesehatan digital terpercaya untuk Anda dan keluarga tercinta.</p>
+
+        <div class="footer-social">
+
+          <a class="social-btn" href="#" title="Facebook">
+            <img src="https://i.ibb.co/QvhkH949/logo-fc-removebg-preview.png" alt="Facebook"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+            </svg>
+          </a>
+
+          <a class="social-btn" href="#" title="Instagram">
+            <img src="https://i.ibb.co/MyZX0wtK/logo-ins-removebg-preview.png" alt="Instagram"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+
+          <a class="social-btn" href="#" title="Twitter / X">
+            <img src="https://i.ibb.co/GQVPTJwp/twitter-removebg-preview.png" alt="Twitter"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.261 5.632 5.903-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Tautan Cepat</h4>
+        <ul>
+          <li><a href="#" onclick="showPage('beranda',null);return false">Beranda</a></li>
+          <li><a href="#" onclick="showPage('janji',null);return false">Janji Temu</a></li>
+          <li><a href="#">Dokter</a></li>
+          <li><a href="#" onclick="showPage('layanan',null);return false">Layanan</a></li>
+          <li><a href="#">Artikel</a></li>
+          <li><a href="#" onclick="showPage('program',null);return false">Program Kesehatan</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Layanan</h4>
+        <ul>
+          <li><a href="#">Konsultasi Online</a></li>
+          <li><a href="#">Pemeriksa Lab</a></li>
+          <li><a href="#">Rawat Inap</a></li>
+          <li><a href="#">Vaksinasi</a></li>
+          <li><a href="#">Home Visit</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Download Aplikasi</h4>
+        <div class="store-btn-wrap">
+
+          <a href="#" class="store-btn">
+            <img src="https://i.ibb.co/xqTCf4my/app-store-removebg-preview.png" alt="App Store"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none" fill="white" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+            </svg>
+            <div class="store-btn-text">
+              <span class="line2">App Store</span>
+            </div>
+          </a>
+
+          <a href="#" class="store-btn">
+            <img src="https://i.ibb.co/Q3BGkFWH/google-removebg-preview.png" alt="Google Play"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <svg style="display:none" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M3 20.5v-17c0-.55.65-.85 1.06-.52l15 8.5a.66.66 0 010 1.04l-15 8.5C3.65 21.35 3 21.05 3 20.5z" fill="#4CAF50"/>
+              <path d="M3 3.5l9 9-9 9" stroke="#2196F3" stroke-width="1.2" fill="none"/>
+              <path d="M3 3.5l9 9 6.5-6.5" fill="#F44336"/>
+              <path d="M3 20.5l9-9 6.5 6.5" fill="#FFEB3B"/>
+            </svg>
+            <div class="store-btn-text">
+              <span class="line2">Google Play</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 SehatKita. Hak Cipta Dilindungi.</span>
+    </div>
+  </footer>
+</div>
+
+<div id="page-janji" class="page">
+  <div style="padding:32px 40px;background:var(--white);border-bottom:1px solid var(--border)">
+    <h2 style="font-size:1.3rem;font-weight:800;color:var(--navy)">Buat Janji Temu</h2>
+    <p style="color:var(--text-light);font-size:.875rem">Pilih dokter dan jadwal yang sesuai dengan Anda</p>
+  </div>
+  <div style="padding:24px 40px 0">
+    <div class="step-indicator">
+      <div class="step done" id="step1"><div class="step-num">✓</div><span class="step-label">Pilih Dokter</span></div>
+      <div class="step-line done"></div>
+      <div class="step active" id="step2"><div class="step-num">2</div><span class="step-label">Isi Detail</span></div>
+      <div class="step-line"></div>
+      <div class="step pending" id="step3"><div class="step-num">3</div><span class="step-label">Konfirmasi</span></div>
+      <div class="step-line"></div>
+      <div class="step pending" id="step4"><div class="step-num">4</div><span class="step-label">Selesai</span></div>
+    </div>
+  </div>
+  <div class="appt-section">
+    <div class="appt-layout">
+      <div class="appt-left">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--navy)">Dokter yang Dipilih</h3>
+        <div style="border:1.5px solid var(--teal);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;background:var(--teal-light)">
+          <img src="https://i.ibb.co/Z4zV3N2/dr-rina.jpg" alt="dr. Rina" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid var(--teal)">
+          <div>
+            <strong style="font-size:.9rem;color:var(--navy)">dr. Rina Marlina, Sp.PD</strong>
+            <p style="font-size:.78rem;color:var(--text-light)">Spesialis Penyakit Dalam</p>
+            <span style="font-size:.72rem;color:var(--teal);font-weight:600">⭐ 4.9 · Tersedia Hari Ini</span>
+          </div>
+          <button class="btn btn-outline" style="margin-left:auto;font-size:.75rem;padding:6px 12px">Ganti</button>
+        </div>
+        <div class="form-group"><label class="form-label">Nama Pasien</label><input type="text" class="form-input" id="input-nama" value="Aletta Maheswari"></div>
+        <div class="form-group"><label class="form-label">Tanggal Konsultasi</label><input type="date" class="form-input" id="input-tanggal" value="2026-04-24"></div>
+        <div class="form-group">
+          <label class="form-label">Pilih Waktu</label>
+          <div class="time-slots">
+            <div class="time-slot active" onclick="selectTime(this,'08.00 – 09.00')">08.00</div>
+            <div class="time-slot" onclick="selectTime(this,'09.00 – 10.00')">09.00</div>
+            <div class="time-slot" onclick="selectTime(this,'10.00 – 11.00')">10.00</div>
+            <div class="time-slot unavail">11.00</div>
+            <div class="time-slot" onclick="selectTime(this,'13.00 – 14.00')">13.00</div>
+            <div class="time-slot" onclick="selectTime(this,'14.00 – 15.00')">14.00</div>
+            <div class="time-slot" onclick="selectTime(this,'15.00 – 16.00')">15.00</div>
+            <div class="time-slot unavail">16.00</div>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Tipe Konsultasi</label><select class="form-select" id="input-tipe"><option value="Online / Telemedicine">Online / Telemedicine</option><option value="Offline / Kunjungan">Offline / Kunjungan</option></select></div>
+        <div class="form-group"><label class="form-label">Keluhan / Catatan</label><textarea class="form-input" id="input-keluhan" rows="3" style="resize:none" placeholder="Tuliskan keluhan atau catatan untuk dokter..."></textarea></div>
+      </div>
+      <div class="appt-right">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--navy)">Ringkasan Janji Temu</h3>
+        <div style="background:var(--bg);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text-light)">Pasien</span><span style="font-weight:600" id="sum-nama">Aletta Maheswari</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text-light)">Dokter</span><span style="font-weight:600">dr. Rina Marlina</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text-light)">Spesialisasi</span><span style="font-weight:600">Penyakit Dalam</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text-light)">Tanggal</span><span style="font-weight:600" id="sum-tanggal">24 April 2026</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text-light)">Waktu</span><span style="font-weight:600" id="sum-waktu">08.00 – 09.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text-light)">Tipe</span><span style="font-weight:600" id="sum-tipe">Online / Telemedicine</span></div>
+          <div style="border-top:1px dashed var(--border);padding-top:10px">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:6px"><span style="color:var(--text-light)">Biaya Konsultasi</span><span style="font-weight:600">Rp 150.000</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:6px"><span style="color:var(--text-light)">Diskon 20%</span><span style="font-weight:600;color:#4CAF50">- Rp 30.000</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:800;color:var(--teal);border-top:1px solid var(--border);padding-top:8px"><span>Total Bayar</span><span>Rp 120.000</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="form-label" style="margin-bottom:10px">Metode Pembayaran</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--teal);border-radius:10px;cursor:pointer;background:var(--teal-light)"><input type="radio" name="payment" value="Transfer Bank" checked style="accent-color:var(--teal)"><span style="font-size:.85rem;font-weight:600">Transfer Bank</span><span style="margin-left:auto;font-size:.75rem;color:var(--text-light)">BCA / Mandiri / BNI</span></label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer"><input type="radio" name="payment" value="QRIS" style="accent-color:var(--teal)"><span style="font-size:.85rem;font-weight:600">QRIS</span><span style="margin-left:auto;font-size:.75rem;color:var(--text-light)">Semua e-wallet</span></label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer"><input type="radio" name="payment" value="Kartu Kredit/Debit" style="accent-color:var(--teal)"><span style="font-size:.85rem;font-weight:600">Kartu Kredit/Debit</span><span style="margin-left:auto;font-size:.75rem;color:var(--text-light)">Visa / Mastercard</span></label>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;padding:14px;font-size:.95rem" onclick="openConfirmModal()">Lanjut ke Konfirmasi →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-riwayat" class="page">
+  <div style="padding:32px 40px;background:var(--white);border-bottom:1px solid var(--border)"><h2 style="font-size:1.3rem;font-weight:800;color:var(--navy)">Riwayat Konsultasi</h2><p style="color:var(--text-light);font-size:.875rem">Semua riwayat konsultasi yang pernah Anda lakukan</p></div>
+  <div style="padding:24px 40px">
+    <div class="history-tabs">
+      <div class="history-tab active" onclick="switchTab(this)">Semua</div>
+      <div class="history-tab" onclick="switchTab(this)">Selesai</div>
+      <div class="history-tab" onclick="switchTab(this)">Mendatang</div>
+      <div class="history-tab" onclick="switchTab(this)">Dibatalkan</div>
+    </div>
+    <div class="history-card"><img src="https://i.ibb.co/Z4zV3N2/dr-rina.jpg" alt="dr. Rina"><div class="history-info"><h4>dr. Rina Marlina, Sp.PD</h4><p>Spesialis Penyakit Dalam</p><p class="date">24 April 2026 · 08.00 – 09.00 · Online</p></div><span class="status-badge status-selesai">Selesai</span><button class="btn-lihat">Lihat Detail</button></div>
+    <div class="history-card"><img src="https://i.ibb.co/ym6cBMBQ/dr-andi.jpg" alt="dr. Andi"><div class="history-info"><h4>dr. Andi Wijaya, Sp.OG</h4><p>Spesialis Kandungan</p><p class="date">1 Juni 2026 · 13.00 – 14.00 · Online</p></div><span class="status-badge status-mendatang">Mendatang</span><button class="btn-lihat">Lihat Detail</button></div>
+    <div class="history-card"><img src="https://i.ibb.co/KcDt7zHM/dr-budi.jpg" alt="dr. Budi"><div class="history-info"><h4>dr. Budi Santoso, Sp.A</h4><p>Spesialis Anak</p><p class="date">15 Maret 2026 · 10.00 – 11.00 · Offline</p></div><span class="status-badge status-selesai">Selesai</span><button class="btn-lihat">Lihat Detail</button></div>
+    <div class="history-card"><img src="https://i.ibb.co/SwkJ86qQ/dr-lisa.webp" alt="dr. Lisa"><div class="history-info"><h4>dr. Lisa Amelia, Sp.GK</h4><p>Spesialis Gizi Klinik</p><p class="date">2 Maret 2026 · 09.00 – 10.00 · Offline</p></div><span class="status-badge status-batal">Dibatalkan</span><button class="btn-lihat">Lihat Detail</button></div>
+  </div>
+</div>
+
+<div id="page-layanan" class="page">
+  <div style="padding:32px 40px;background:var(--white);border-bottom:1px solid var(--border)"><h2 style="font-size:1.3rem;font-weight:800;color:var(--navy)">Layanan Kesehatan</h2><p style="color:var(--text-light);font-size:.875rem">Temukan layanan yang tepat untuk kebutuhan Anda</p></div>
+  <div class="section">
+    <div class="layanan-grid">
+      <div class="layanan-card"><div style="width:52px;height:52px;border-radius:14px;background:#E0F7F5;margin:0 auto 10px;display:flex;align-items:center;justify-content:center"><svg fill="none" viewBox="0 0 24 24" stroke="var(--teal)" width="28" height="28"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h4 style="font-weight:700;color:var(--navy);margin-bottom:4px">Konsultasi Online</h4><p style="font-size:.75rem;color:var(--text-light)">Chat & video call dengan dokter</p></div>
+      <div class="layanan-card"><div style="width:52px;height:52px;border-radius:14px;background:#E3F2FD;margin:0 auto 10px;display:flex;align-items:center;justify-content:center"><svg fill="none" viewBox="0 0 24 24" stroke="#2196F3" width="28" height="28"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div><h4 style="font-weight:700;color:var(--navy);margin-bottom:4px">Pemeriksaan Darah</h4><p style="font-size:.75rem;color:var(--text-light)">Cek lab di rumah atau klinik</p></div>
+      <div class="layanan-card"><div style="width:52px;height:52px;border-radius:14px;background:#FFEBEE;margin:0 auto 10px;display:flex;align-items:center;justify-content:center"><svg fill="none" viewBox="0 0 24 24" stroke="#E53935" width="28" height="28"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><h4 style="font-weight:700;color:var(--navy);margin-bottom:4px">Penanganan Darurat</h4><p style="font-size:.75rem;color:var(--text-light)">Layanan UGD 24 jam</p></div>
+      <div class="layanan-card"><div style="width:52px;height:52px;border-radius:14px;background:#E8F5E9;margin:0 auto 10px;display:flex;align-items:center;justify-content:center"><svg fill="none" viewBox="0 0 24 24" stroke="#4CAF50" width="28" height="28"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h4 style="font-weight:700;color:var(--navy);margin-bottom:4px">Program Kesehatan</h4><p style="font-size:.75rem;color:var(--text-light)">Paket langganan kesehatan</p></div>
+    </div>
+    <div style="margin-top:32px">
+      <div class="section-title">Layanan Populer</div>
+      <div class="section-sub" style="margin-bottom:16px">Pilihan layanan yang paling banyak digunakan</div>
+      <div class="popular-card"><img src="https://i.ibb.co/nMBpZMPR/konsultasi-dokter.jpg" alt="Konsultasi"><div class="popular-content"><span class="article-tag">Populer</span><h4>Konsultasi dengan Dokter Spesialis dari Rumah Anda</h4><ul><li>Dokter terverifikasi</li><li>Tersedia 24/7</li><li>Resep digital tersedia</li><li>Harga terjangkau</li></ul><button class="btn btn-primary" style="margin-top:12px;font-size:.8rem" onclick="showPage('janji',null)">Buat Janji Temu</button></div></div>
+      <div class="popular-card"><img src="https://i.ibb.co/6R7krR12/paket-kesehatan.webp" alt="Paket"><div class="popular-content"><span class="article-tag">Rekomendasi</span><h4>Paket Cek Kesehatan Lengkap + Konsultasi Dokter</h4><ul><li>Cek darah lengkap</li><li>Konsultasi dokter umum</li><li>Laporan kesehatan digital</li><li>Gratis follow-up</li></ul><button class="btn btn-primary" style="margin-top:12px;font-size:.8rem">Lihat Paket</button></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="page-program" class="page">
+  <div style="padding:32px 40px;background:var(--white);border-bottom:1px solid var(--border)"><h2 style="font-size:1.3rem;font-weight:800;color:var(--navy)">Program Kesehatan</h2><p style="color:var(--text-light);font-size:.875rem">Program kesehatan terpadu untuk hidup lebih sehat</p></div>
+  <div class="section">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)"><img src="https://i.ibb.co/qLwcWrFz/makanan.jpg" alt="Nutrisi" style="width:100%;height:160px;object-fit:cover"><div style="padding:18px"><h4 style="font-weight:700;color:var(--navy);margin-bottom:6px">Nutrisi</h4><p style="font-size:.8rem;color:var(--text-light)">Program pola makan sehat dengan panduan ahli gizi</p><button class="btn btn-primary" style="margin-top:12px;font-size:.78rem;padding:6px 14px">Ikuti Program</button></div></div>
+      <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)"><img src="https://i.ibb.co/99jCY1Qf/kesehatan-mental.jpg" alt="Mental" style="width:100%;height:160px;object-fit:cover"><div style="padding:18px"><h4 style="font-weight:700;color:var(--navy);margin-bottom:6px">Kesehatan Mental</h4><p style="font-size:.8rem;color:var(--text-light)">Sesi terapi dan meditasi bersama psikolog bersertifikat</p><button class="btn btn-primary" style="margin-top:12px;font-size:.78rem;padding:6px 14px">Ikuti Program</button></div></div>
+      <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)"><img src="https://i.ibb.co/0p96cqmq/olahraga.jpg" alt="Olahraga" style="width:100%;height:160px;object-fit:cover"><div style="padding:18px"><h4 style="font-weight:700;color:var(--navy);margin-bottom:6px">Olahraga & Kebugaran</h4><p style="font-size:.8rem;color:var(--text-light)">Panduan latihan fisik dengan personal trainer bersertifikat</p><button class="btn btn-primary" style="margin-top:12px;font-size:.78rem;padding:6px 14px">Ikuti Program</button></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="page-profil" class="page">
+  <div style="padding:32px 40px;background:var(--white);border-bottom:1px solid var(--border)"><h2 style="font-size:1.3rem;font-weight:800;color:var(--navy)">Profil Saya</h2></div>
+  <div style="padding:32px 40px;max-width:600px">
+    <div style="background:#fff;border-radius:14px;padding:28px;box-shadow:var(--shadow);display:flex;align-items:center;gap:20px;margin-bottom:24px">
+      <img src="https://i.ibb.co/HLD4xt6d/pasien.jpg" alt="Profil" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--teal)">
+      <div><h3 style="font-size:1.1rem;font-weight:700;color:var(--navy)">Aletta Maheswari</h3><p style="color:var(--text-light);font-size:.85rem">aletta.maheswari@email.com</p><span style="font-size:.75rem;background:var(--teal-light);color:var(--teal);padding:2px 10px;border-radius:20px;font-weight:600">Member Aktif</span></div>
+    </div>
+    <div style="background:#fff;border-radius:14px;padding:24px;box-shadow:var(--shadow)">
+      <h4 style="font-weight:700;color:var(--navy);margin-bottom:16px">Data Diri</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" value="Aletta Maheswari"></div>
+        <div class="form-group"><label class="form-label">Tanggal Lahir</label><input class="form-input" type="date" value="1999-05-09"></div>
+        <div class="form-group"><label class="form-label">No. Telepon</label><input class="form-input" value="+62 812-3456-7890"></div>
+        <div class="form-group"><label class="form-label">Golongan Darah</label><select class="form-select"><option>A</option><option selected>B</option><option>AB</option><option>O</option></select></div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:16px">Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalKonfirmasi">
+  <div class="confirm-modal">
+    <div class="confirm-header">
+      <div class="confirm-header-icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div><h2>Konfirmasi Janji Temu</h2><p>Pastikan detail janji temu Anda sudah benar sebelum melanjutkan</p></div>
+    </div>
+    <div class="confirm-body">
+      <div class="confirm-doc-row">
+        <img src="https://i.ibb.co/Z4zV3N2/dr-rina.jpg" alt="Dokter" id="confirm-doc-img">
+        <div class="confirm-doc-info"><h4>dr. Rina Marlina, Sp.PD</h4><p>Spesialis Penyakit Dalam · STR Terverifikasi</p><span>⭐ 4.9 · Online Sekarang</span></div>
+      </div>
+      <div class="confirm-details">
+        <div class="confirm-detail-item"><div class="detail-label">👤 Pasien</div><div class="detail-value" id="conf-nama">Aletta Maheswari</div></div>
+        <div class="confirm-detail-item"><div class="detail-label">📅 Tanggal</div><div class="detail-value" id="conf-tanggal">24 April 2026</div></div>
+        <div class="confirm-detail-item"><div class="detail-label">🕐 Waktu</div><div class="detail-value" id="conf-waktu">08.00 – 09.00</div></div>
+        <div class="confirm-detail-item"><div class="detail-label">💻 Tipe</div><div class="detail-value" id="conf-tipe">Online / Telemedicine</div></div>
+        <div class="confirm-detail-item"><div class="detail-label">💳 Pembayaran</div><div class="detail-value" id="conf-payment">Transfer Bank</div></div>
+        <div class="confirm-detail-item"><div class="detail-label">🔖 Kode Booking</div><div class="detail-value" id="conf-kode" style="color:var(--teal)">#SK-2026-XXXX</div></div>
+      </div>
+      <div class="confirm-note"><div class="note-label">📝 Keluhan / Catatan</div><div class="note-text" id="conf-keluhan">—</div></div>
+      <div class="confirm-price"><div><div class="price-label">Total yang dibayar</div><div class="price-sub">Sudah termasuk diskon 20%</div></div><div class="price-value">Rp 120.000</div></div>
+      <div class="confirm-terms">✅ Dengan mengkonfirmasi, Anda menyetujui <a href="#">Syarat & Ketentuan</a> serta <a href="#">Kebijakan Privasi</a> SehatKita.</div>
+    </div>
+    <div class="confirm-footer">
+      <button class="btn btn-outline" onclick="closeConfirmModal()">← Kembali Edit</button>
+      <button class="btn btn-primary" onclick="submitConfirmation()" id="btnSubmit"><span id="btnSubmitText">✅ Konfirmasi &amp; Bayar</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalSukses">
+  <div class="success-modal">
+    <div class="success-icon"><svg fill="none" viewBox="0 0 24 24" stroke="white" width="40" height="40"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h2>Janji Temu Berhasil! 🎉</h2>
+    <p>Janji temu Anda dengan <strong>dr. Rina Marlina, Sp.PD</strong> telah dikonfirmasi. Notifikasi dikirim ke email Anda.</p>
+    <div class="success-booking-id" id="success-booking-id">Kode Booking: #SK-2026-XXXX</div>
+    <div class="success-detail">
+      <div class="success-detail-row"><span style="color:var(--text-light)">Dokter</span><span style="font-weight:600">dr. Rina Marlina, Sp.PD</span></div>
+      <div class="success-detail-row"><span style="color:var(--text-light)">Tanggal</span><span style="font-weight:600" id="success-tanggal">—</span></div>
+      <div class="success-detail-row"><span style="color:var(--text-light)">Waktu</span><span style="font-weight:600" id="success-waktu">—</span></div>
+      <div class="success-detail-row"><span style="color:var(--text-light)">Tipe</span><span style="font-weight:600" id="success-tipe">—</span></div>
+      <div class="success-detail-row" style="border-top:1px dashed var(--border);padding-top:8px;margin-top:4px"><span style="color:var(--text-light)">Total Dibayar</span><span style="font-weight:700;color:var(--teal)">Rp 120.000</span></div>
+    </div>
+    <div class="success-actions">
+      <button class="btn btn-primary" style="padding:13px" onclick="closeSuksesModal();showPage('riwayat',null)">Lihat Riwayat Konsultasi</button>
+      <button class="btn btn-outline" style="padding:11px" onclick="closeSuksesModal()">Kembali ke Beranda</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const btn=document.getElementById('hamburgerBtn');
+  const ov=document.getElementById('sidebarOverlay');
+  sb.classList.toggle('open');
+  btn.classList.toggle('open');
+  ov.classList.toggle('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('hamburgerBtn').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+function showPage(id, linkEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+  const map = {beranda:0,janji:1,riwayat:2,layanan:3,program:4,profil:5};
+  const items = document.querySelectorAll('.sidebar-item');
+  if (map[id] !== undefined) items[map[id]].classList.add('active');
+  window.scrollTo(0,0);
+}
+function switchTab(el) {
+  el.closest('.history-tabs').querySelectorAll('.history-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+let selectedTime = '08.00 – 09.00';
+function selectTime(el, timeStr) {
+  document.querySelectorAll('.time-slot:not(.unavail)').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  selectedTime = timeStr;
+  document.getElementById('sum-waktu').textContent = selectedTime;
+  document.getElementById('conf-waktu').textContent = selectedTime;
+}
+function updateSummary() {
+  const nama = document.getElementById('input-nama');
+  const tanggal = document.getElementById('input-tanggal');
+  const tipe = document.getElementById('input-tipe');
+  if (nama) { document.getElementById('sum-nama').textContent = nama.value||'—'; document.getElementById('conf-nama').textContent = nama.value||'—'; }
+  if (tanggal && tanggal.value) {
+    const tgl = new Date(tanggal.value).toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('sum-tanggal').textContent = tgl;
+    document.getElementById('conf-tanggal').textContent = tgl;
+  }
+  if (tipe) { document.getElementById('sum-tipe').textContent = tipe.value; document.getElementById('conf-tipe').textContent = tipe.value; }
+}
+function generateBookingCode() {
+  const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let s='';
+  for(let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)];
+  return '#SK-2026-'+s;
+}
+function openConfirmModal() {
+  updateSummary();
+  document.getElementById('conf-keluhan').textContent = document.getElementById('input-keluhan').value.trim()||'Tidak ada catatan';
+  const pay = document.querySelector('input[name="payment"]:checked');
+  if(pay) document.getElementById('conf-payment').textContent = pay.value;
+  const code = generateBookingCode();
+  document.getElementById('conf-kode').textContent = code;
+  document.getElementById('success-booking-id').textContent = 'Kode Booking: '+code;
+  document.getElementById('step3').className='step active';
+  document.getElementById('step3').querySelector('.step-num').textContent='3';
+  document.getElementById('modalKonfirmasi').classList.add('open');
+}
+function closeConfirmModal() { document.getElementById('modalKonfirmasi').classList.remove('open'); }
+function submitConfirmation() {
+  const btn=document.getElementById('btnSubmit'), txt=document.getElementById('btnSubmitText');
+  btn.disabled=true; txt.textContent='⏳ Memproses pembayaran...'; btn.style.opacity='.8';
+  setTimeout(()=>{
+    closeConfirmModal();
+    document.getElementById('success-tanggal').textContent=document.getElementById('conf-tanggal').textContent;
+    document.getElementById('success-waktu').textContent=document.getElementById('conf-waktu').textContent;
+    document.getElementById('success-tipe').textContent=document.getElementById('conf-tipe').textContent;
+    document.getElementById('step3').className='step done';
+    document.getElementById('step3').querySelector('.step-num').textContent='✓';
+    document.getElementById('step4').className='step done';
+    document.getElementById('step4').querySelector('.step-num').textContent='✓';
+    document.getElementById('modalSukses').classList.add('open');
+    btn.disabled=false; txt.innerHTML='✅ Konfirmasi &amp; Bayar'; btn.style.opacity='1';
+  },1800);
+}
+function closeSuksesModal() { document.getElementById('modalSukses').classList.remove('open'); showPage('beranda',null); }
+document.getElementById('modalKonfirmasi').addEventListener('click',function(e){if(e.target===this)closeConfirmModal();});
+document.getElementById('modalSukses').addEventListener('click',function(e){if(e.target===this)closeSuksesModal();});
+document.addEventListener('DOMContentLoaded',function(){
+  ['input-nama','input-tanggal','input-tipe'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.addEventListener('input',updateSummary);el.addEventListener('change',updateSummary);}
+  });
+  updateSummary();
+});
+</script>
+</body>
+</html>
